@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup as BS
 from email.mime.text import MIMEText
 import base64
-from gmail_auth import auth
 from email.mime.base import MIMEBase
 import mimetypes
 import os
