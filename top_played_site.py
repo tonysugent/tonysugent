@@ -6,8 +6,7 @@ import spotipy.util as util
 from flask import Flask, request
 import psycopg2
 from spotipy import oauth2
-import requests
-port = 5000
+
 client_id = '980378f790cb40f595ecebedd58691f8'
 client_secret = '365553ea22a64893b758fa2d2f8a79f0'
 redirect_uri = 'http://10.0.0.251:5000/'
