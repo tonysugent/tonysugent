@@ -42,7 +42,7 @@ def by_country(con):
 def find_closest_reactor(address):
 
     geolocator = Nominatim(user_agent="api")
-    add = geolocator.geocode(address)
+    add = geolocator.geocode('Michigan')
 
     url = 'https://en.wikipedia.org/wiki/List_of_nuclear_power_stations'
     r = requests.get(url)
@@ -52,52 +52,56 @@ def find_closest_reactor(address):
 
     drop_list = ['# units', 'Net capacity(MWe)', 'Country', 'Refs']
 
-    lats_only = df[1].drop(drop_list, axis=1)
+    lats_only = df[1].drop('Refs', axis=1)
     lats_only['Location'] = lats_only['Location'].str.split("/", expand=False).str[1].str.replace('°', '')
     lats_only['Location'] = lats_only['Location'].str.split(" ", expand=False).str[1:]
     lats_only['Lat'] = lats_only['Location'].str[0]
     lats_only['Lon'] = lats_only['Location'].str[1]
+    lats_only['Net capacity(MWe)'] = lats_only['Net capacity(MWe)'].str.split("[").str[0]
 
     z = 0
     for i in lats_only['Lon']:
         if i.endswith('W'):
             i = i.replace('W', '')
-            lats_only['Lon'][z] = -(float(i))
+            lats_only.at[z, 'Lon'] = -(float(i))
         else:
             i = i.replace('E', '')
-            lats_only['Lon'][z] = float(i)
+            lats_only.at[z, 'Lon'] = float(i)
         z = z + 1
 
-    g = 0
+    z = 0
     for i in lats_only['Lat']:
         if i.endswith('S'):
             i = i.replace('S', '')
-            lats_only['Lat'][g] = -(float(i.lstrip('\ufeff')))
+            lats_only.at[z, 'Lat'] = -(float(i.lstrip('\ufeff')))
         else:
             i = i.replace('N', '')
-            lats_only['Lat'][g] = float(i.lstrip('\ufeff'))
-        g = g + 1
+            lats_only.at[z, 'Lat'] = float(i.lstrip('\ufeff'))
+        z = z + 1
 
     lats_only = lats_only.drop('Location', axis=1)
 
     user_location = (add.latitude, add.longitude)
     reactor_location = []
-    h = 0
-    for i in lats_only['Lat']:
-        reactor_location.append(tuple((lats_only['Lat'][h], lats_only['Lon'][h])))
-        h = h+1
 
-    c = 0
+    z = 0
+    for i in lats_only['Lat']:
+        reactor_location.append(tuple((lats_only['Lat'][z], lats_only['Lon'][z])))
+        z = z+1
+
+
     dist = []
 
+    z = 0
     for i in reactor_location:
-        dist.append(math.sqrt((user_location[0]-reactor_location[c][0])**2+(user_location[1]-reactor_location[c][1])**2))
-        c = c+1
+        dist.append(math.sqrt((user_location[0]-reactor_location[z][0])**2+(user_location[1]-reactor_location[z][1])**2))
+        z = z+1
 
     lats_only['Dist'] = dist
     lats_only = lats_only.sort_values('Dist').reset_index()
-
-    return(str(lats_only['Power station'][0]))
+    results = lats_only.head(1).drop('index', axis=1)
+    results = json.loads(results.to_json(orient='records'))
+    return(json.dumps(results))
 
 @app.errorhandler(404)
 def page_not_found(error):
