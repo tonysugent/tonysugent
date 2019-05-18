@@ -23,8 +23,13 @@ def countries():
 
 @app.route('/countries/current/<string:con>')
 
-# Country Codes are = {Argentina: AR, Bangladesh: BD, Belarus: BY,
-# Brazil: BR, China: CN, Finland: FL, }
+# Country Codes are = {Argentina: AR, Armenia: AM, Bangladesh: BD, Belarus: BY,
+# Belguim: BE, Brazil: BR, Bulgaria: BG, Canada: CA China: CN, Czech Republic: CZ
+# Finland: FL, France: FR, Germany: DE, Hungary: HU, India: IN, Iran: IR
+# Italy: IT, Japan: JP, Kazakhstan: KZ, Korea: KR, Lithuania: LT, Mexico: MX,
+# Netherlands: NL, Pakistan: PK, Romainia: RO, Russia: RU, Slovakia: SK
+# Slovenia: SI, South Africa: ZA, Spain: ES, Sweden: SE, Switzerland: CH,
+# Turkey: TR, Ukraine: UA, UAE: AE United Kingdom: GB, USA: US}
 
 def by_country(con):
 
